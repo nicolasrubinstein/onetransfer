@@ -586,3 +586,23 @@ button:active {
     display: none;
   }
 }
+
+footer {
+  text-align: center;
+  padding: 24px 0 16px;
+  font-size: 0.75rem;
+  color: var(--color-muted, #6b7280);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+}
+
+footer a {
+  color: var(--color-muted, #6b7280);
+  text-decoration: underline;
+}
+
+footer a:hover {
+  color: var(--color-text, #e5e7eb);
+}
