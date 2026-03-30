@@ -90,6 +90,12 @@
         </div>
 
         <div id="results-list"></div>
+
+        <div id="copy-row" style="display: none; margin-top: 12px">
+          <button class="btn-secondary" id="btn-copy" type="button">
+            Copiar transferencias
+          </button>
+        </div>
       </section>
     </main>
 
@@ -125,6 +131,9 @@
       const errorMsg = document.getElementById("error-msg");
       const resultsSection = document.getElementById("results-section");
       const resultsList = document.getElementById("results-list");
+      const copyRow = document.getElementById("copy-row");
+      const btnCopy = document.getElementById("btn-copy");
+      let lastTransfers = [];
       const statTotal = document.getElementById("stat-total");
       const statPerPerson = document.getElementById("stat-per-person");
       const statTransfers = document.getElementById("stat-transfers");
@@ -210,6 +219,7 @@
           balance: p.balance,
         }));
         const transfers = getTransactions(copy);
+        lastTransfers = transfers;
 
         const total = participants.reduce((sum, p) => sum + p.balance, 0);
         const perPerson = total / participants.length;
@@ -224,7 +234,7 @@
           const div = document.createElement("div");
           div.className = "no-transfers";
           div.innerHTML =
-            '<span class="badge badge-success">Settled</span> Everyone paid equally — no transfers needed.';
+            '<span class="badge badge-success">Todo cancelado</span> Todo está cancelado, no se requieren transferencias';
           resultsList.appendChild(div);
         } else {
           transfers.forEach((t, i) => {
@@ -241,6 +251,7 @@
           });
         }
 
+        copyRow.style.display = transfers.length > 0 ? "block" : "none";
         resultsSection.classList.add("visible");
         resultsSection.scrollIntoView({ behavior: "smooth", block: "start" });
       }
@@ -258,6 +269,8 @@
       function hideResults() {
         resultsSection.classList.remove("visible");
         resultsList.innerHTML = "";
+        copyRow.style.display = "none";
+        lastTransfers = [];
       }
 
       function showError(msg) {
@@ -281,6 +294,22 @@
           .replace(/>/g, "&gt;")
           .replace(/"/g, "&quot;");
       }
+
+      btnCopy.addEventListener("click", () => {
+        const text = lastTransfers
+          .map(
+            (t) =>
+              `${t.source.name} le pasa ${formatCurrency(t.amt)} a ${t.target.name}`,
+          )
+          .join("\n");
+        navigator.clipboard.writeText(text).then(() => {
+          const orig = btnCopy.textContent;
+          btnCopy.textContent = "Copiado!";
+          setTimeout(() => {
+            btnCopy.textContent = orig;
+          }, 1500);
+        });
+      });
 
       btnAdd.addEventListener("click", addParticipant);
       btnCalculate.addEventListener("click", calculate);
