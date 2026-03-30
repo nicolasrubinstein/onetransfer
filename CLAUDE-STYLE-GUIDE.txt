@@ -1,0 +1,205 @@
+STYLE GUIDE — EVERYDAY UTILITY APP
+====================================
+Aesthetic Direction: Industrial Utilitarian / Swiss Grid
+Tone: No-nonsense. Dense. Precise. Built to be used, not admired.
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+COLORS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+--color-bg:           #0B0F1A   /* near-black navy — the canvas */
+--color-surface:      #111827   /* slightly lighter, for cards/panels */
+--color-surface-alt:  #1C2333   /* borders, dividers, subtle layering */
+--color-primary:      #1D4ED8   /* deep blue — the one accent that matters */
+--color-primary-hover:#2563EB   /* slightly brighter on interaction */
+--color-primary-muted:#1E3A8A   /* for backgrounds of active states */
+--color-text:         #E8ECF0   /* off-white — NOT pure white */
+--color-text-secondary:#8A95A3  /* labels, placeholders, secondary info */
+--color-text-disabled: #3D4A5C  /* inactive elements */
+--color-destructive:  #DC2626   /* errors, delete actions — only red allowed */
+--color-success:      #16A34A   /* confirmation states — use sparingly */
+--color-border:       #1F2D3D   /* all borders */
+--color-border-focus: #1D4ED8   /* focus ring, same as primary */
+
+Rule: No gradients. No transparency tricks. No glassmorphism. No shadows on
+shadows. Flat surfaces with hard borders. Depth is achieved through layering
+surface colors, not blur effects.
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+TYPOGRAPHY
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Display / UI Labels:  "IBM Plex Mono" — monospaced, technical, authoritative
+Body / Descriptions:  "IBM Plex Sans" — clean, legible at small sizes
+Fallback:             monospace, sans-serif
+
+Why Plex: It reads like a tool. Not a product. Not a startup. A tool.
+
+Scale (strict — no improvising):
+  --text-xs:    11px / line-height 1.4 / tracking 0.04em
+  --text-sm:    13px / line-height 1.5 / tracking 0.02em
+  --text-base:  15px / line-height 1.6 / tracking 0
+  --text-lg:    18px / line-height 1.4 / tracking -0.01em
+  --text-xl:    24px / line-height 1.2 / tracking -0.02em
+  --text-2xl:   32px / line-height 1.1 / tracking -0.03em
+
+Weights: 400 (body), 500 (labels), 700 (headings and critical values only)
+No 600. No 300. No italic except error messages.
+
+Rule: App title uses Plex Mono 700. Section labels use Plex Mono 500 uppercase
+with 0.08em letter-spacing. Values and data use Plex Mono 400. Everything else
+uses Plex Sans.
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SPACING
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Base unit: 4px
+Scale: 4 / 8 / 12 / 16 / 24 / 32 / 48 / 64 / 96
+
+--space-1:  4px
+--space-2:  8px
+--space-3:  12px
+--space-4:  16px
+--space-6:  24px
+--space-8:  32px
+--space-12: 48px
+--space-16: 64px
+
+Page padding (horizontal): 24px mobile, 40px desktop
+Section gap: 32px
+Component internal padding: 12px (compact) or 16px (default)
+Label to input gap: 6px
+
+Rule: Be dense. This is a utility, not a landing page. White space is for
+breathing room only, not decoration. If something looks too spacious, it
+probably is.
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+LAYOUT
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Single column. Max-width 680px, centered.
+Header: fixed, 48px tall, full-width, bg = --color-bg, bottom border only.
+Content area: starts at 48px offset, scrollable.
+No sidebar. No split pane. No modal overlays unless absolutely necessary.
+
+Grid inside sections: CSS Grid, 12-column, gap 16px.
+Most components span full width or split 50/50. No thirds.
+
+Rule: Everything aligns to the grid. Nothing floats arbitrarily.
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+COMPONENTS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+BUTTONS
+  Primary:   bg --color-primary, text white, 36px height, px 16px
+             border: none, border-radius: 3px
+             hover: bg --color-primary-hover
+             active: scale(0.98), instant
+             font: Plex Mono 500, 13px, uppercase, tracking 0.06em
+
+  Secondary: bg transparent, border 1px --color-border, text --color-text
+             hover: border --color-primary, text --color-primary
+
+  Destructive: bg --color-destructive, same specs as primary
+
+  No rounded pills. No large padding. No icon-only buttons without tooltips.
+
+INPUTS
+  Height: 36px
+  bg: --color-surface, border: 1px solid --color-border
+  border-radius: 3px
+  focus: border-color --color-border-focus, outline none, no glow/shadow
+  font: Plex Mono 400, 14px, color --color-text
+  placeholder: --color-text-disabled
+  label: Plex Mono 500, 11px, uppercase, --color-text-secondary, mb 6px
+
+  Textarea: same styles, min-height 80px, resize vertical only
+
+CARDS / PANELS
+  bg: --color-surface
+  border: 1px solid --color-border
+  border-radius: 4px
+  padding: 16px
+  No shadow. No hover lift effect.
+
+DIVIDERS
+  1px solid --color-border
+  Full width, no margin tricks
+
+STATUS / BADGES
+  Inline, 11px Plex Mono uppercase, padding 2px 6px, border-radius 2px
+  Success: bg #14532D, text #4ADE80
+  Error:   bg #450A0A, text #F87171
+  Info:    bg --color-primary-muted, text #93C5FD
+  No icons in badges. Text only.
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+MOTION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Transition duration: 120ms for interactions (hover, focus, active)
+Easing: ease-out for everything
+
+Allowed animations:
+  - Button active press: transform scale(0.98), 80ms
+  - Input focus: border-color transition, 120ms
+  - Result/output appearing: opacity 0 → 1, translateY(4px) → 0, 150ms
+  - Error shake: 3 cycles, 20px displacement, 300ms total
+
+Forbidden:
+  - Skeleton loaders with shimmer
+  - Spinning loading indicators on buttons
+  - Page transitions
+  - Scroll-triggered animations
+  - Anything that plays on mount unprompted
+
+Rule: Motion confirms actions. It does not entertain.
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ICONOGRAPHY
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Library: Lucide (stroke-only, consistent weight)
+Size: 16px standard, 14px inline with text
+Stroke width: 1.5px
+Color: inherit from text color
+
+No filled icons. No icon animations. No decorative icons.
+Icons appear next to labels — never alone without accessible text.
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+WHAT IS FORBIDDEN
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+- Gradients (background, text, border — any kind)
+- Box shadows (except 1px inset for pressed states if needed)
+- Glassmorphism / backdrop-filter
+- Rounded corners above 4px (except full circles for avatars, if any)
+- Emojis in UI (only in user-generated content)
+- Decorative illustrations or blobs
+- Font: Inter, Roboto, Arial, system-ui, sans-serif as primary
+- Color: purple, teal, orange, pink — anything not in the palette above
+- Hover cards / popover previews
+- Toast notifications stacked more than one at a time
+- Marketing copy anywhere in the interface
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+GUIDING PRINCIPLE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+This app should look like it was designed by an engineer who has strong
+opinions and zero interest in trends. The user opens it, does the thing,
+closes it. The interface never gets in the way. It looks identical in six
+months. No one posts it on Dribbble.

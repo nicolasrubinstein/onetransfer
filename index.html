@@ -1,0 +1,301 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>OneTransfer</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header>
+      <span class="header-title">ONETRANSFER</span>
+      <span class="header-subtitle">Una transferencia por persona.</span>
+    </header>
+
+    <main>
+      <!-- ADD PARTICIPANT -->
+      <section>
+        <div class="section-label">Participantes</div>
+        <div class="card">
+          <div class="add-form">
+            <div class="field">
+              <label for="input-name">Nombre</label>
+              <input
+                type="text"
+                id="input-name"
+                placeholder="ej. Ana"
+                autocomplete="off"
+              />
+            </div>
+            <div class="field">
+              <label for="input-amount"
+                >Pagó
+                <span class="label-hint">(dejar vacío si no pagó)</span></label
+              >
+              <input
+                type="number"
+                id="input-amount"
+                placeholder="0.00"
+                min="0"
+                step="0.01"
+              />
+            </div>
+            <button class="btn-primary" id="btn-add" type="button">Add</button>
+          </div>
+          <div class="error-msg" id="error-msg">
+            Necesitás poner un nombre válido.
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <div class="section-label">
+          Agregados — <span id="participant-count">0</span> participantes
+        </div>
+        <div id="participant-list-empty" class="empty-state">
+          Todavía no hay paritipantes, agregar 2 al menos.
+        </div>
+        <div id="participant-list" class="participant-list"></div>
+      </section>
+
+      <section>
+        <div class="actions-row">
+          <button class="btn-primary" id="btn-calculate" type="button">
+            Calcular transferencias
+          </button>
+          <button class="btn-secondary" id="btn-reset" type="button">
+            Reset
+          </button>
+        </div>
+      </section>
+
+      <div class="divider"></div>
+
+      <section id="results-section">
+        <div class="section-label">Transferencias</div>
+
+        <div class="summary-row" id="summary-row">
+          <div class="summary-stat">
+            <div class="summary-stat-label">Total</div>
+            <div class="summary-stat-value" id="stat-total">—</div>
+          </div>
+          <div class="summary-stat">
+            <div class="summary-stat-label">Por persona</div>
+            <div class="summary-stat-value" id="stat-per-person">—</div>
+          </div>
+          <div class="summary-stat">
+            <div class="summary-stat-label">Transferencias</div>
+            <div class="summary-stat-value" id="stat-transfers">—</div>
+          </div>
+        </div>
+
+        <div id="results-list"></div>
+      </section>
+    </main>
+
+    <script src="./functions.js"></script>
+
+    <script>
+      "use strict";
+
+      const STORAGE_KEY = "onetransfer_participants";
+      let participants = [];
+
+      function saveToStorage() {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(participants));
+      }
+
+      function loadFromStorage() {
+        try {
+          const saved = localStorage.getItem(STORAGE_KEY);
+          if (saved) participants = JSON.parse(saved);
+        } catch {
+          participants = [];
+        }
+      }
+
+      const inputName = document.getElementById("input-name");
+      const inputAmount = document.getElementById("input-amount");
+      const btnAdd = document.getElementById("btn-add");
+      const btnCalculate = document.getElementById("btn-calculate");
+      const btnReset = document.getElementById("btn-reset");
+      const listEl = document.getElementById("participant-list");
+      const listEmptyEl = document.getElementById("participant-list-empty");
+      const countEl = document.getElementById("participant-count");
+      const errorMsg = document.getElementById("error-msg");
+      const resultsSection = document.getElementById("results-section");
+      const resultsList = document.getElementById("results-list");
+      const statTotal = document.getElementById("stat-total");
+      const statPerPerson = document.getElementById("stat-per-person");
+      const statTransfers = document.getElementById("stat-transfers");
+
+      function renderList() {
+        listEl.innerHTML = "";
+        countEl.textContent = participants.length;
+
+        if (participants.length === 0) {
+          listEmptyEl.style.display = "block";
+          listEl.style.display = "none";
+          return;
+        }
+
+        listEmptyEl.style.display = "none";
+        listEl.style.display = "flex";
+
+        participants.forEach((p, i) => {
+          const row = document.createElement("div");
+          row.className = "participant-row";
+          row.innerHTML = `
+          <span class="participant-name">${escHtml(p.name)}</span>
+          <span class="participant-amount">${formatCurrency(p.balance)}</span>
+          <button class="btn-destructive" data-index="${i}" aria-label="Remove ${escHtml(p.name)}">Remove</button>
+        `;
+          listEl.appendChild(row);
+        });
+      }
+
+      function addParticipant() {
+        const name = inputName.value.trim();
+        const rawAmount = inputAmount.value.trim();
+        const amount = rawAmount === "" ? 0 : parseFloat(rawAmount);
+
+        if (!name || isNaN(amount) || amount < 0) {
+          showError();
+          return;
+        }
+
+        if (
+          participants.some((p) => p.name.toLowerCase() === name.toLowerCase())
+        ) {
+          showError("A participant with that name already exists.");
+          return;
+        }
+
+        participants.push({ name, balance: amount });
+        saveToStorage();
+        inputName.value = "";
+        inputAmount.value = "";
+        inputName.focus();
+        hideError();
+        renderList();
+        hideResults();
+      }
+
+      listEl.addEventListener("click", (e) => {
+        if (e.target.classList.contains("btn-destructive")) {
+          const idx = parseInt(e.target.dataset.index, 10);
+          participants.splice(idx, 1);
+          saveToStorage();
+          renderList();
+          hideResults();
+        }
+      });
+
+      function calculate() {
+        if (participants.length < 2) {
+          showError("Add at least two participants before calculating.");
+          btnCalculate.classList.add("shake");
+          btnCalculate.addEventListener(
+            "animationend",
+            () => btnCalculate.classList.remove("shake"),
+            { once: true },
+          );
+          return;
+        }
+
+        hideError();
+
+        const copy = participants.map((p) => ({
+          name: p.name,
+          balance: p.balance,
+        }));
+        const transfers = getTransactions(copy);
+
+        const total = participants.reduce((sum, p) => sum + p.balance, 0);
+        const perPerson = total / participants.length;
+
+        statTotal.textContent = formatCurrency(total);
+        statPerPerson.textContent = formatCurrency(rounder(perPerson));
+        statTransfers.textContent = transfers.length;
+
+        resultsList.innerHTML = "";
+
+        if (transfers.length === 0) {
+          const div = document.createElement("div");
+          div.className = "no-transfers";
+          div.innerHTML =
+            '<span class="badge badge-success">Settled</span> Everyone paid equally — no transfers needed.';
+          resultsList.appendChild(div);
+        } else {
+          transfers.forEach((t, i) => {
+            const row = document.createElement("div");
+            row.className = "result-row";
+            row.style.animationDelay = `${i * 40}ms`;
+            row.innerHTML = `
+            <span class="result-source">${escHtml(t.source.name)}</span>
+            <span class="result-arrow">&#x2192; paga &#x2192;</span>
+            <span class="result-target">${escHtml(t.target.name)}</span>
+            <span class="result-amount">${formatCurrency(t.amt)}</span>
+          `;
+            resultsList.appendChild(row);
+          });
+        }
+
+        resultsSection.classList.add("visible");
+        resultsSection.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+
+      function reset() {
+        participants = [];
+        localStorage.removeItem(STORAGE_KEY);
+        inputName.value = "";
+        inputAmount.value = "";
+        hideError();
+        renderList();
+        hideResults();
+      }
+
+      function hideResults() {
+        resultsSection.classList.remove("visible");
+        resultsList.innerHTML = "";
+      }
+
+      function showError(msg) {
+        errorMsg.textContent =
+          msg || "Both name and a valid amount are required.";
+        errorMsg.classList.add("visible");
+      }
+
+      function hideError() {
+        errorMsg.classList.remove("visible");
+      }
+
+      function formatCurrency(n) {
+        return n.toFixed(2);
+      }
+
+      function escHtml(str) {
+        return str
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;");
+      }
+
+      btnAdd.addEventListener("click", addParticipant);
+      btnCalculate.addEventListener("click", calculate);
+      btnReset.addEventListener("click", reset);
+
+      inputAmount.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") addParticipant();
+      });
+
+      inputName.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") inputAmount.focus();
+      });
+
+      loadFromStorage();
+      renderList();
+    </script>
+  </body>
+</html>
