@@ -1,0 +1,27 @@
+{
+  "name": "onetransfer",
+  "version": "1.0.0",
+  "description": "Herramienta para que no tengas que hacer mil transferencias cuando muchos ponen plata en una cena.",
+  "main": "index.html",
+  "scripts": {
+    "test": "echo \"No tests configured\" && exit 0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nicolasrubinstein/onetransfer.git"
+  },
+  "keywords": [
+    "transfer",
+    "calculator",
+    "expenses"
+  ],
+  "author": "Nicolas Rubinstein",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/nicolasrubinstein/onetransfer/issues"
+  },
+  "homepage": "https://github.com/nicolasrubinstein/onetransfer#readme",
+  "dependencies": {
+    "@vercel/analytics": "^2.0.1"
+  }
+}
