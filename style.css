@@ -308,6 +308,11 @@ button:active {
   align-items: center;
 }
 
+#copy-row {
+  display: flex;
+  gap: var(--space-3);
+}
+
 .participant-count {
   font-family: 'IBM Plex Mono', monospace;
   font-size: var(--text-xs);

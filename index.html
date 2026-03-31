@@ -95,6 +95,9 @@
           <button class="btn-secondary" id="btn-copy" type="button">
             Copiar transferencias
           </button>
+          <button class="btn-secondary" id="btn-share" type="button" style="display: none">
+            Compartir
+          </button>
         </div>
       </section>
     </main>
@@ -143,6 +146,8 @@
       const resultsList = document.getElementById("results-list");
       const copyRow = document.getElementById("copy-row");
       const btnCopy = document.getElementById("btn-copy");
+      const btnShare = document.getElementById("btn-share");
+      if (navigator.share) btnShare.style.display = "";
       let lastTransfers = [];
       const statTotal = document.getElementById("stat-total");
       const statPerPerson = document.getElementById("stat-per-person");
@@ -319,6 +324,16 @@
             btnCopy.textContent = orig;
           }, 1500);
         });
+      });
+
+      btnShare.addEventListener("click", () => {
+        const text = lastTransfers
+          .map(
+            (t) =>
+              `${t.source.name} le pasa ${formatCurrency(t.amt)} a ${t.target.name}`,
+          )
+          .join("\n");
+        navigator.share({ text });
       });
 
       btnAdd.addEventListener("click", addParticipant);
